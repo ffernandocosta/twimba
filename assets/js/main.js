@@ -113,7 +113,7 @@ function getHtmlFeed(){
                     </div>   
                 </div>            
             </div>
-            <div id="replies-${tweet.uuid}">
+            <div class="hidden" id="replies-${tweet.uuid}">
                 ${repliesHtml}
             </div>
         </div>
