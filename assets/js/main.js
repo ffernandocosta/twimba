@@ -10,6 +10,9 @@ document.addEventListener('click', function(e){
     else if (e.target.dataset.retweet){
         handleRetweetClick(e.target.dataset.retweet)
     }
+    else if (e.target.dataset.reply){
+        handleReplyClick(e.target.dataset.reply)
+    }
 })
 
 function handleLikeClick(tweetId){
@@ -42,6 +45,10 @@ function handleRetweetClick(tweetId){
     render()
 }
 
+function handleReplyClick(replyId){
+    document.getElementById(`replies-${replyId}`).classList.toggle('hidden')
+}
+
 function getHtmlFeed(){
     
     let htmlFeed = ``
@@ -59,6 +66,23 @@ function getHtmlFeed(){
         if (tweet.isRetweeted){
             retweetIconClass = 'retweeted'
         }
+
+        let repliesHtml = ''
+        if (tweet.replies.length > 0){
+            tweet.replies.forEach(function(reply){
+                repliesHtml += `
+                <div class="tweet-reply">
+                    <div class="tweet-inner">
+                        <img src="${reply.profilePic}" class="profile-pic">
+                        <div>
+                            <p class="handle">${reply.handle}</p>
+                            <p class="tweet-text">${reply.tweetText}</p>
+                        </div>
+                    </div>
+                </div>
+                `
+            })
+        }
         
         htmlFeed += `
         <div class="tweet">
@@ -70,7 +94,7 @@ function getHtmlFeed(){
                     <div class="tweet-details">
                         <span class="tweet-detail">
                             <i class="fa-regular fa-comment-dots"
-                            dota-reply="${tweet.uuid}"
+                            data-reply="${tweet.uuid}"
                             ></i>
                             ${tweet.replies.length}
                         </span>
@@ -88,6 +112,9 @@ function getHtmlFeed(){
                         </span>
                     </div>   
                 </div>            
+            </div>
+            <div id="replies-${tweet.uuid}">
+                ${repliesHtml}
             </div>
         </div>
         `
