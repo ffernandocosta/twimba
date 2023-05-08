@@ -14,7 +14,10 @@ document.addEventListener('click', function(e){
     else if (e.target.id === 'tweet-btn'){
         handleTweetBtnClick()
     }
-})
+    else if (e.target.dataset.replyButton){
+        handleReplyTweetBtnClick(e.target.dataset.replyButton)
+    }
+})  
 
 function handleLikeClick(tweetId){
     const targetTweetObj = tweetsData.filter(function(tweet){
@@ -48,6 +51,7 @@ function handleRetweetClick(tweetId){
 
 function handleReplyClick(replyId){
     document.getElementById(`replies-${replyId}`).classList.toggle('hidden')
+    document.getElementById(`tweet-reply-area-${replyId}`).classList.toggle('hidden')
 }
 
 function handleTweetBtnClick(){
@@ -69,6 +73,24 @@ function handleTweetBtnClick(){
         tweetInput.value = ''
     }
 }
+
+function handleReplyTweetBtnClick(tweetId){
+    const tweetReplyInput = document.getElementById(`tweet-reply-input-${tweetId}`);
+    const targetTweetObj = tweetsData.filter(function(tweet){
+        return tweet.uuid === tweetId
+    })[0]
+
+    if(tweetReplyInput.value){
+        targetTweetObj.replies.unshift({
+            handle: `@Scrimba`,
+            profilePic: `assets/images/scrimbalogo.png`,
+            tweetText: tweetReplyInput.value,
+        })
+        render()
+        tweetReplyInput.value = ''
+    }
+}
+
 
 function getHtmlFeed(){
     
@@ -93,13 +115,13 @@ function getHtmlFeed(){
             tweet.replies.forEach(function(reply){
                 repliesHtml += `
                 <div class="tweet-reply">
-                    <div class="tweet-inner">
-                        <img src="${reply.profilePic}" class="profile-pic">
-                        <div>
-                            <p class="handle">${reply.handle}</p>
-                            <p class="tweet-text">${reply.tweetText}</p>
+                        <div class="tweet-inner">
+                            <img src="${reply.profilePic}" class="profile-pic">
+                            <div>
+                                <p class="handle">${reply.handle}</p>
+                                <p class="tweet-text">${reply.tweetText}</p>
+                            </div>
                         </div>
-                    </div>
                 </div>
                 `
             })
@@ -133,6 +155,19 @@ function getHtmlFeed(){
                         </span>
                     </div>   
                 </div>            
+            </div>
+            <div class="hidden tweet-reply-area" id="tweet-reply-area-${tweet.uuid}">
+                <img src="/assets/images/scrimbalogo.png" class="profile-pic">
+                <textarea 
+                    id="tweet-reply-input-${tweet.uuid}"
+                    placeholder="Tweet your reply"
+                    class="tweet-reply-input"
+                ></textarea>
+                <button 
+                    id="tweet-reply-btn-${tweet.uuid}"
+                    class="tweet-reply-btn"
+                    data-reply-button="${tweet.uuid}"
+                >Tweet</button>
             </div>
             <div class="hidden" id="replies-${tweet.uuid}">
                 ${repliesHtml}
