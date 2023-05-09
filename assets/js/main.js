@@ -17,6 +17,13 @@ document.addEventListener('click', function(e){
     else if (e.target.dataset.replyButton){
         handleReplyTweetBtnClick(e.target.dataset.replyButton)
     }
+    else if (e.target.dataset.deleteTweet){
+        handleDeleteTweetBtnClick(e.target.dataset.deleteTweet)
+    }
+    else if (e.target.dataset.deleteReplyTweet){
+        handleDeleteReplyTweetBtnClick(e.target.dataset.deleteReplyTweet)
+    }
+
 })  
 
 function handleLikeClick(tweetId){
@@ -85,11 +92,42 @@ function handleReplyTweetBtnClick(tweetId){
             handle: `@Scrimba`,
             profilePic: `assets/images/scrimbalogo.png`,
             tweetText: tweetReplyInput.value,
+            uuid: uuidv4()
         })
         render()
         tweetReplyInput.value = ''
     }
 }
+
+function handleDeleteTweetBtnClick(tweetId){
+    const targetTweetObj = tweetsData.filter(function(tweet){
+        return tweet.uuid === tweetId
+    })[0]
+
+    console.log(targetTweetObj)
+
+    tweetsData.forEach(function(tweet, index){
+        if(targetTweetObj === tweet){
+            tweetsData.splice(index, 1)
+        }
+    })
+    render()
+}
+
+function handleDeleteReplyTweetBtnClick(replyId) {
+    let targetReplyObj = null;
+    tweetsData.forEach(function(tweet) {
+      const replyIndex = tweet.replies.findIndex((reply) => reply.uuid === replyId);
+      if (replyIndex !== -1) {
+        targetReplyObj = tweet.replies[replyIndex];
+        tweet.replies.splice(replyIndex, 1);
+      }
+    });
+    console.log(targetReplyObj);
+    render();
+  }
+  
+
 
 
 function getHtmlFeed(){
@@ -120,6 +158,25 @@ function getHtmlFeed(){
                             <div>
                                 <p class="handle">${reply.handle}</p>
                                 <p class="tweet-text">${reply.tweetText}</p>
+                                <div class="tweet-details">
+                                    <span class="tweet-detail">
+                                        <i class="fa-solid fa-heart ${likeIconClass}"
+                                            data-reply-like="${reply.uuid}"
+                                        ></i>
+                                        ${reply.likes}
+                                    </span>
+                                    <span class="tweet-detail">
+                                        <i class="fa-solid fa-retweet ${retweetIconClass}"
+                                        data-reply-retweet="${reply.uuid}"
+                                        ></i>
+                                        ${reply.retweets}
+                                    </span>
+                                    <span class="tweet-detail">
+                                        <i class="fa-regular fa-trash-can"
+                                            data-delete-reply-tweet="${reply.uuid}"
+                                        ></i>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                 </div>
@@ -152,6 +209,11 @@ function getHtmlFeed(){
                             data-retweet="${tweet.uuid}"
                             ></i>
                             ${tweet.retweets}
+                        </span>
+                        <span class="tweet-detail">
+                        <i class="fa-regular fa-trash-can"
+                            data-delete-tweet="${tweet.uuid}"
+                        ></i>
                         </span>
                     </div>   
                 </div>            
