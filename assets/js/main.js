@@ -5,8 +5,14 @@ document.addEventListener('click', function(e){
     if(e.target.dataset.like){
         handleLikeClick(e.target.dataset.like)
     }
+    else if (e.target.dataset.replyLike){
+        handleReplyLikeClick(e.target.dataset.replyLike)
+    }
     else if (e.target.dataset.retweet){
         handleRetweetClick(e.target.dataset.retweet)
+    }
+    else if (e.target.dataset.replyRetweet){
+        handleReplyRetweetClick(e.target.dataset.replyRetweet)
     }
     else if (e.target.dataset.reply){
         handleReplyClick(e.target.dataset.reply)
@@ -38,7 +44,29 @@ function handleLikeClick(tweetId){
         targetTweetObj.likes++
     }
     targetTweetObj.isLiked = !targetTweetObj.isLiked
-    render()
+    render();
+}
+
+function handleReplyLikeClick(replyId){
+    let targetReplyObj = null;
+    tweetsData.forEach(function(tweet){
+        const replyIndex = tweet.replies.findIndex(function(reply){
+            return reply.uuid === replyId
+        })
+
+        if (replyIndex !== -1){
+            targetReplyObj = tweet.replies[replyIndex];
+        
+            if(targetReplyObj.isLiked){
+                targetReplyObj.likes--
+            }
+            else {
+                targetReplyObj.likes++
+            }
+            targetReplyObj.isLiked = !targetReplyObj.isLiked
+        }
+    });
+    render();
 }
 
 function handleRetweetClick(tweetId){
@@ -54,6 +82,27 @@ function handleRetweetClick(tweetId){
     }
     targetTweetObj.isRetweeted = !targetTweetObj.isRetweeted
     render()
+}
+
+function handleReplyRetweetClick(replyId){
+    let targetReplyObj = null;
+    tweetsData.forEach(function(tweet){
+      const replyIndex = tweet.replies.findIndex(function(reply){
+        return reply.uuid === replyId
+      })
+      if (replyIndex !== -1) {
+        targetReplyObj = tweet.replies[replyIndex];
+        if(targetReplyObj.isRetweeted){
+            targetReplyObj.retweets--
+        }
+        else {
+            targetReplyObj.retweets++
+        }
+        targetReplyObj.isRetweeted = !targetReplyObj.isRetweeted
+      }
+    });
+    render();
+
 }
 
 function handleReplyClick(replyId){
@@ -91,7 +140,11 @@ function handleReplyTweetBtnClick(tweetId){
         targetTweetObj.replies.unshift({
             handle: `@Scrimba`,
             profilePic: `assets/images/scrimbalogo.png`,
+            likes: 0,
+            retweets: 0,
             tweetText: tweetReplyInput.value,
+            isLiked: false,
+            isRetweeted: false,
             uuid: uuidv4()
         })
         render()
@@ -103,8 +156,6 @@ function handleDeleteTweetBtnClick(tweetId){
     const targetTweetObj = tweetsData.filter(function(tweet){
         return tweet.uuid === tweetId
     })[0]
-
-    console.log(targetTweetObj)
 
     tweetsData.forEach(function(tweet, index){
         if(targetTweetObj === tweet){
@@ -123,7 +174,6 @@ function handleDeleteReplyTweetBtnClick(replyId) {
         tweet.replies.splice(replyIndex, 1);
       }
     });
-    console.log(targetReplyObj);
     render();
   }
   
@@ -151,6 +201,20 @@ function getHtmlFeed(){
         let repliesHtml = ''
         if (tweet.replies.length > 0){
             tweet.replies.forEach(function(reply){
+                
+
+                let replyLikeIconclass = ''
+                
+                if (reply.isLiked){
+                    replyLikeIconclass = 'liked'
+                }
+
+                let replyRetweetIconClass = ''
+
+                if (reply.isRetweeted){
+                    replyRetweetIconClass = 'retweeted'
+                }
+
                 repliesHtml += `
                 <div class="tweet-reply">
                         <div class="tweet-inner">
@@ -160,13 +224,13 @@ function getHtmlFeed(){
                                 <p class="tweet-text">${reply.tweetText}</p>
                                 <div class="tweet-details">
                                     <span class="tweet-detail">
-                                        <i class="fa-solid fa-heart ${likeIconClass}"
+                                        <i class="fa-solid fa-heart ${replyLikeIconclass}"
                                             data-reply-like="${reply.uuid}"
                                         ></i>
                                         ${reply.likes}
                                     </span>
                                     <span class="tweet-detail">
-                                        <i class="fa-solid fa-retweet ${retweetIconClass}"
+                                        <i class="fa-solid fa-retweet ${replyRetweetIconClass}"
                                         data-reply-retweet="${reply.uuid}"
                                         ></i>
                                         ${reply.retweets}
