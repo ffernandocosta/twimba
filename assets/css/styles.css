@@ -169,3 +169,14 @@ header{
 .hidden{
     display: none;
 }
+
+/* footer */
+
+.footer {
+    text-align: center;
+    font-size: 11px; text-align: center; margin-top: 4rem;
+}
+
+.footer a {
+    color: var(--clr-accent-400);
+}
