@@ -170,7 +170,7 @@ This is a project I built during module 5 of [Scrimba's](scrimba.com) JavaScript
 
 - [Overview](#overview)
   - [The challenge](#the-challenge)
-  - [Video](#video)
+  - [Screenshot](#screenshot)
   - [Links](#links)
 - [My process](#my-process)
   - [Built with](#built-with)
